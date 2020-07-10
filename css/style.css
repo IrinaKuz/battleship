@@ -1,0 +1,103 @@
+*{
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+body{
+  position: relative;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  background-color: #400080;
+}
+h1{
+  font-family: 'Bungee', Arial, sans-serif;
+  font-size: 50px;
+  background-color: pink;
+  background-image: linear-gradient(to bottom right, #ff33ff, #400080);
+  color: #330033;
+  text-align: center;
+  padding: 10px 0;
+}
+.main{
+  display: flex;
+  max-width: 700px;
+  margin: 40px auto;
+}
+.gameboard{
+  position: relative;
+  margin-left: 30px;
+  margin-right: 30px;
+}
+.board {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 303px;
+  height: 303px;
+  border: 2px solid black;
+  overflow: hidden;
+  background-color: #f2f2d9;
+}
+.letters{
+  position: absolute;
+  top: -20px;
+  left: 0;
+  display: flex;
+}
+.letters div{
+  color: #ff33ff;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+}
+.numbers{
+  position: absolute;
+  top: 0;
+  left: -20px;
+  display: flex;
+  flex-direction: column;
+}
+.numbers div{
+  color: #ff33ff;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.board:last-child{
+  margin-right: 0;
+}
+.cell{
+  display: flex;
+  position: absolute;
+  border: 1px solid black;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+}
+.ship{
+  background-color: goldenrod;
+}
+.hit{
+  background-color: red;
+}
+.sunk{
+  border: 1px solid red;
+}
+.end_game{
+  display: none;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 300px;
+  height: 200px;
+  font-size: 30px;
+  background-color: pink;
+  color: purple;
+}
