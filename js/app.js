@@ -1,14 +1,6 @@
 const my_board = document.querySelector('#my_board');
 const comp_board = document.querySelector('#comp_board');
 let cells_comp = [];
-let coordX;
-let coordY;
-
-my_board.addEventListener('mousemove', function(e) {
-  coordX = e.clientX;
-  coordY = e.clientY;
-});
-
 
 let my_gameboard = new Gameboard();
 let comp_gameboard = new Gameboard();

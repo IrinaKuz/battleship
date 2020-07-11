@@ -16,6 +16,7 @@ class Gameboard{
     this.myTotalSunk = 0;
     this.shipActive = false;
     this.activeShipInd; // index of an active ship (that was clicked)
+    this.onMoveShip = () => {};
     this.placeShips();
   }
 
@@ -151,6 +152,9 @@ class Gameboard{
         } else if(this.matrix[i].status == '!') {
           cells[i].classList.add('sunk');
         }
+      } else if (cells[i].classList.value.includes('ship')) {
+          cells[i].classList.remove('ship');
+          cells[i].textContent = '';
       }
     }
   }
@@ -219,13 +223,14 @@ class Gameboard{
     this.placeShips();
   }
 
-  activateShipHandler(board) {
-      let gameboard = this;
-      board.addEventListener('dblclick', function(e) {
+  activateShipHandler(boardEl) {
+      const gameboard = this;
+      console.log(gameboard);
+      boardEl.addEventListener('dblclick', function(e) {
         e.preventDefault();
         gameboard.shipActive = false;
         gameboard.activeShipInd = '';
-        const boardRect = board.getBoundingClientRect();
+        const boardRect = boardEl.getBoundingClientRect();
         const left = boardRect.x;
         const top = boardRect.y;
         let coordX = e.clientX - left;
@@ -233,8 +238,47 @@ class Gameboard{
         const getCell = gameboard.getCellIndex.bind(gameboard, coordX, coordY);
         const cellInd = getCell();
         const getShip = gameboard.getShip.bind(gameboard, cellInd);
-        getShip();
-        });
+        const isShip = getShip();
+        if (isShip) {
+          const cellX = Math.floor(coordX / 30);
+          const cellY = Math.floor(coordY /30);
+          gameboard.activeShipInd = gameboard.findShip(cellX, cellY);
+          gameboard.shipActive = true;
+          const shipC = gameboard.ships[gameboard.activeShipInd].coords;
+          console.log(shipC);
+          gameboard.onMoveShip = () => {
+            console.log(gameboard);
+                document.querySelector('#my_board').addEventListener('click', chooseShip);
+                function chooseShip(e) {
+                  let leftC, topC;
+                  const boardRect = document.querySelector('#my_board').getBoundingClientRect();
+                  const left = boardRect.x;
+                  const top = boardRect.y;
+                  leftC = e.clientX - left;
+                  topC = e.clientY - top;
+
+                  const shipCoordX = Math.floor(leftC / 30);
+                  const shipCoordY = Math.floor(topC / 30);
+                  debugger;
+                  const coord = gameboard.makeShipCoords(shipCoordX, shipCoordY, gameboard.ships[gameboard.activeShipInd].length, gameboard.ships[gameboard.activeShipInd].vertical);
+                  if (!gameboard.shipCollides(coord)) {
+                    const shipLength = gameboard.ships[gameboard.activeShipInd].length;
+                    const shipVertical = gameboard.ships[gameboard.activeShipInd].vertical;
+                    gameboard.ships.splice(gameboard.activeShipInd, 1);
+                    gameboard.ships.push(new Ship(shipCoordX, shipCoordY, shipLength, shipVertical));
+                    gameboard.removeShip();
+                  }
+                  gameboard.shipActive = false;
+                  console.log(gameboard.ships);
+                  document.querySelector('#my_board').removeEventListener('click', chooseShip);
+                  gameboard.removeShip(document.querySelector('#my_board'));
+                  gameboard.renderBoard(boardEl);
+                //  gameboard.onMoveShip = () => {};
+                }
+          };
+          gameboard.onMoveShip();
+        }
+      });
   }
 
   getCellIndex(x, y) {
@@ -248,29 +292,22 @@ class Gameboard{
     const cellY = Math.floor(cellInd / this.width);
     const cellX = cellInd % this.width;
     if(this.matrix[cellInd].status === 's') {
-        this.activeShipInd = this.findShip(cellX, cellY);
-        this.shipActive = true;
-        this.moveShipHandler();
+        return true;
+    } else {
+      return false;
     }
   }
 
-  moveShipHandler() {
-    const gameboard = this;
-        document.querySelector('#my_board').addEventListener('click', function(e) {
-          let leftC, topC;
-          const boardRect = document.querySelector('#my_board').getBoundingClientRect();
-          const left = boardRect.x;
-          const top = boardRect.y;
-          leftC = e.clientX - left;
-          topC = e.clientY - top;
-          console.log(e.clientX + ' ' + e.clientY);
-          console.log(leftC + ' ' + topC);
-          const shipCoordX = Math.floor(leftC / 30);
-          const shipCoordY = Math.floor(topC / 30);
-          console.log(shipCoordX + ' ' + shipCoordY);
-          gameboard.ships.push(new Ship(shipCoordX, shipCoordY, gameboard.ships[gameboard.activeShipInd].length, gameboard.ships[gameboard.activeShipInd].vertical));
-          gameboard.shipActive = false;
-        });
+  removeShip() {
+    for (let i = 0; i < this.matrix.length; i++) {
+      let cX = i % 10;
+      let cY = Math.floor(i / 10);
+      if (this.findShip(cX, cY) != undefined) {
+        this.matrix[i].status = 's';
+      } else {
+        this.matrix[i].status = 'o';
+      }
+    }
   }
 
   endGame(text) {
