@@ -147,14 +147,21 @@ class Gameboard{
         cells[i].textContent = this.matrix[i].status;
         if(this.matrix[i].status == 's') {
           cells[i].classList.add('ship');
+        } else if (this.matrix[i].status == 'a') {
+          cells[i].classList.add('activated');
         } else if (this.matrix[i].status == 'sa' || this.matrix[i].status == 'X') {
           cells[i].classList.add('hit');
         } else if(this.matrix[i].status == '!') {
           cells[i].classList.add('sunk');
         }
-      } else if (cells[i].classList.value.includes('ship')) {
-          cells[i].classList.remove('ship');
-          cells[i].textContent = '';
+      }
+      if (cells[i].classList.value.includes('ship') && this.matrix[i].status == 'o') {
+        cells[i].classList.remove('ship');
+        cells[i].textContent = '';
+      }
+      if (cells[i].classList.value.includes('activated') && this.matrix[i].status == 'o') {
+        cells[i].classList.remove('activated');
+        cells[i].textContent = '';
       }
     }
   }
@@ -246,6 +253,8 @@ class Gameboard{
           gameboard.shipActive = true;
           const shipC = gameboard.ships[gameboard.activeShipInd].coords;
           console.log(shipC);
+          gameboard.activateShipCells();
+          gameboard.renderBoard(boardEl);
           gameboard.onMoveShip = () => {
             console.log(gameboard);
                 document.querySelector('#my_board').addEventListener('click', chooseShip);
@@ -259,7 +268,6 @@ class Gameboard{
 
                   const shipCoordX = Math.floor(leftC / 30);
                   const shipCoordY = Math.floor(topC / 30);
-                  debugger;
                   const coord = gameboard.makeShipCoords(shipCoordX, shipCoordY, gameboard.ships[gameboard.activeShipInd].length, gameboard.ships[gameboard.activeShipInd].vertical);
                   if (!gameboard.shipCollides(coord)) {
                     const shipLength = gameboard.ships[gameboard.activeShipInd].length;
@@ -307,6 +315,17 @@ class Gameboard{
       } else {
         this.matrix[i].status = 'o';
       }
+    }
+  }
+
+  activateShipCells() {
+    debugger;
+    const ship = this.ships[this.activeShipInd];
+    const coord = ship.coords;
+    for (let i = 0; i < coord.length; i++) {
+      const x = coord[i].x;
+      const y = coord[i].y;
+      this.matrix[this.findCellByXY(x, y)].status = 'a';
     }
   }
 
