@@ -1,5 +1,6 @@
 const my_board = document.querySelector('#my_board');
 const comp_board = document.querySelector('#comp_board');
+const start_game = document.querySelector('#start_game');
 let cells_comp = [];
 
 let my_gameboard = new Gameboard();
@@ -31,15 +32,21 @@ function getCoords(e) {
 }
 
 async function addCellListeners() {
-  await drawBoards();
+  //await drawBoards();
   for (let i = 0; i < cells_comp.length; i++) {
     cells_comp[i].addEventListener('click', getCoords);
   }
 }
 
-addCellListeners();
+drawBoards();
 user.chooseShip(my_board);
 
+// Start the game when user clicks on 'start game' button
+start_game.addEventListener('click', function() {
+  this.style.display = 'none';
+  user.my_gameboard.deactivateShipHandler(my_board);
+  addCellListeners();
+});
 
 function loop(coord) {
       let result = computer.my_gameboard.receiveAttack(coord);

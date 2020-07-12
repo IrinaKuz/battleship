@@ -20,9 +20,6 @@ class Player {
   }
 
   chooseShip(board) {
-    console.log(board);
     this.my_gameboard.activateShipHandler(board);
-    //this.my_gameboard.moveShipHandler(board);
   }
-
 }

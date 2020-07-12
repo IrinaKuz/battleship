@@ -143,25 +143,23 @@ class Gameboard{
   renderBoard(parent) {
     const cells = parent.querySelectorAll('.cell');
     for (let i = 0; i < cells.length; i++) {
-      if(this.matrix[i].status != 'o') {
-        cells[i].textContent = this.matrix[i].status;
-        if(this.matrix[i].status == 's') {
+      cells[i].className = 'cell'; // remove all classes from cells except for "cell"
+      if(this.matrix[i].status === 'o') {
+        cells[i].textContent = '';
+      } else if(this.matrix[i].status === 'O') {
+        cells[i].textContent = 'o';
+      } else if(this.matrix[i].status === 's') {
           cells[i].classList.add('ship');
-        } else if (this.matrix[i].status == 'a') {
+          cells[i].textContent = 's';
+      } else if (this.matrix[i].status == 'a') {
           cells[i].classList.add('activated');
-        } else if (this.matrix[i].status == 'sa' || this.matrix[i].status == 'X') {
+          cells[i].textContent = 'a';
+      } else if (this.matrix[i].status == 'sa' || this.matrix[i].status == 'X') {
           cells[i].classList.add('hit');
-        } else if(this.matrix[i].status == '!') {
+          cells[i].textContent = 'X';
+      } else if(this.matrix[i].status == '!') {
           cells[i].classList.add('sunk');
-        }
-      }
-      if (cells[i].classList.value.includes('ship') && this.matrix[i].status == 'o') {
-        cells[i].classList.remove('ship');
-        cells[i].textContent = '';
-      }
-      if (cells[i].classList.value.includes('activated') && this.matrix[i].status == 'o') {
-        cells[i].classList.remove('activated');
-        cells[i].textContent = '';
+          cells[i].textContent = '!';
       }
     }
   }
@@ -235,8 +233,7 @@ class Gameboard{
       console.log(gameboard);
       boardEl.addEventListener('dblclick', function(e) {
         e.preventDefault();
-        gameboard.shipActive = false;
-        gameboard.activeShipInd = '';
+
         const boardRect = boardEl.getBoundingClientRect();
         const left = boardRect.x;
         const top = boardRect.y;
@@ -253,14 +250,14 @@ class Gameboard{
           gameboard.shipActive = true;
           const shipC = gameboard.ships[gameboard.activeShipInd].coords;
           console.log(shipC);
-          gameboard.activateShipCells();
+          gameboard.updateShipCells('active');
           gameboard.renderBoard(boardEl);
           gameboard.onMoveShip = () => {
             console.log(gameboard);
-                document.querySelector('#my_board').addEventListener('click', chooseShip);
+                boardEl.addEventListener('click', chooseShip);
                 function chooseShip(e) {
                   let leftC, topC;
-                  const boardRect = document.querySelector('#my_board').getBoundingClientRect();
+                  const boardRect = boardEl.getBoundingClientRect();
                   const left = boardRect.x;
                   const top = boardRect.y;
                   leftC = e.clientX - left;
@@ -275,14 +272,21 @@ class Gameboard{
                     gameboard.ships.splice(gameboard.activeShipInd, 1);
                     gameboard.ships.push(new Ship(shipCoordX, shipCoordY, shipLength, shipVertical));
                     gameboard.removeShip();
+                  } else {
+                    gameboard.updateShipCells('inactive');
+                    gameboard.renderBoard(boardEl);
                   }
                   gameboard.shipActive = false;
+                  gameboard.activeShipInd = '';
                   console.log(gameboard.ships);
-                  document.querySelector('#my_board').removeEventListener('click', chooseShip);
-                  gameboard.removeShip(document.querySelector('#my_board'));
+                  boardEl.removeEventListener('click', chooseShip);
+                  gameboard.removeShip(boardEl);
                   gameboard.renderBoard(boardEl);
-                //  gameboard.onMoveShip = () => {};
                 }
+                document.querySelector('#start_game').addEventListener('click', function() {
+                  debugger;
+                  boardEl.removeEventListener('click', chooseShip);
+                });
           };
           gameboard.onMoveShip();
         }
@@ -318,17 +322,25 @@ class Gameboard{
     }
   }
 
-  activateShipCells() {
-    debugger;
+  updateShipCells(status) {
+  //  debugger;
     const ship = this.ships[this.activeShipInd];
     const coord = ship.coords;
     for (let i = 0; i < coord.length; i++) {
       const x = coord[i].x;
       const y = coord[i].y;
-      this.matrix[this.findCellByXY(x, y)].status = 'a';
+      if(status === 'active') {
+        this.matrix[this.findCellByXY(x, y)].status = 'a';
+      } else {
+        this.matrix[this.findCellByXY(x, y)].status = 's';
+      }
     }
   }
 
+  deactivateShipHandler(boardEl) {
+    this.onMoveShip = () => {};
+    boardEl.removeEventListener('click', chooseShip);
+  }
   endGame(text) {
     document.querySelector('#end_game').textContent = text;
     document.querySelector('#end_game').style.display = 'flex';
