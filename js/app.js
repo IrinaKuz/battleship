@@ -55,11 +55,9 @@ function onChooseShip(e) {
     my_gameboard.activeShipInd = my_gameboard.findShip(cellX, cellY);
     my_gameboard.shipActive = true;
     const shipC = my_gameboard.ships[my_gameboard.activeShipInd].coords;
-    console.log(shipC);
     my_gameboard.updateShipCells('active');
     my_gameboard.renderBoard(my_board);
     my_gameboard.onMoveShip = () => {
-      console.log(my_gameboard);
       function moveShip(e) {
         let leftC, topC;
         const boardRect = my_board.getBoundingClientRect();
@@ -83,7 +81,6 @@ function onChooseShip(e) {
         }
         my_gameboard.shipActive = false;
         my_gameboard.activeShipInd = '';
-        console.log(my_gameboard.ships);
         my_board.removeEventListener('click', moveShip);
         my_gameboard.removeShip(my_board);
         my_gameboard.renderBoard(my_board);
@@ -95,17 +92,14 @@ function onChooseShip(e) {
 }
 
 drawBoards();
-//user.chooseShip(my_board);
 my_board.addEventListener('dblclick', onChooseShip);
 
 // Start the game when user clicks on 'start game' button
-window.addEventListener('click', function() {
-  if(this.id == 'start_game') {
-    start_game.style.display = 'none';
+start_game.addEventListener('click', function() {
+    this.style.display = 'none';
+    // unregister onChooseShip handler
     my_board.removeEventListener('dblclick', onChooseShip);
-    user.removeChooseShip();
     addCellListeners();
-  }
 });
 
 function loop(coord) {

@@ -48,17 +48,8 @@ class Gameboard{
       this.matrix[cell_ind].status = 'X';
       result = 'hit';
       // update ships
-      let ind;
-      try {
-        ind = this.findShip(x, y);
-        if(ind === undefined) throw "Ship is undefined";
-        if(ind > this.ships.length - 1) throw "The index is too high!";
-      }
-      catch(err) {
-        console.error(err);
-      }
+      let ind = this.findShip(x, y);
       this.ships[ind].addHit(x, y);
-  //    console.log(this.matrix);
       if(this.ships[ind].isSunk()) {
         console.log('Your ship is sunk');
         result = 'sunk';
@@ -272,15 +263,6 @@ class Gameboard{
     }
   }
 
-/*
-  activateShipHandler(boardEl) {
-        const gameboard = this;
-        console.log(gameboard);
-
-
-        }
-  }
-*/
   deactivateShipHandler(boardEl) {
     this.onMoveShip = () => {};
     boardEl.removeEventListener('click', chooseShip);
