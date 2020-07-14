@@ -19,7 +19,9 @@ class Player {
               y: Math.floor(Math.random()* this.my_gameboard.height) });
   }
 
-  chooseShip(board) {
-    this.my_gameboard.activateShipHandler(board);
+  chooseShip(boardEl) {
+    debugger;
+    this.my_gameboard.activateShipHandler(boardEl);
   }
+
 }

@@ -228,71 +228,6 @@ class Gameboard{
     this.placeShips();
   }
 
-  activateShipHandler(boardEl) {
-      const gameboard = this;
-      console.log(gameboard);
-      boardEl.addEventListener('dblclick', function(e) {
-        e.preventDefault();
-
-        const boardRect = boardEl.getBoundingClientRect();
-        const left = boardRect.x;
-        const top = boardRect.y;
-        let coordX = e.clientX - left;
-        let coordY = e.clientY - top;
-        const getCell = gameboard.getCellIndex.bind(gameboard, coordX, coordY);
-        const cellInd = getCell();
-        const getShip = gameboard.getShip.bind(gameboard, cellInd);
-        const isShip = getShip();
-        if (isShip) {
-          const cellX = Math.floor(coordX / 30);
-          const cellY = Math.floor(coordY /30);
-          gameboard.activeShipInd = gameboard.findShip(cellX, cellY);
-          gameboard.shipActive = true;
-          const shipC = gameboard.ships[gameboard.activeShipInd].coords;
-          console.log(shipC);
-          gameboard.updateShipCells('active');
-          gameboard.renderBoard(boardEl);
-          gameboard.onMoveShip = () => {
-            console.log(gameboard);
-                boardEl.addEventListener('click', chooseShip);
-                function chooseShip(e) {
-                  let leftC, topC;
-                  const boardRect = boardEl.getBoundingClientRect();
-                  const left = boardRect.x;
-                  const top = boardRect.y;
-                  leftC = e.clientX - left;
-                  topC = e.clientY - top;
-
-                  const shipCoordX = Math.floor(leftC / 30);
-                  const shipCoordY = Math.floor(topC / 30);
-                  const coord = gameboard.makeShipCoords(shipCoordX, shipCoordY, gameboard.ships[gameboard.activeShipInd].length, gameboard.ships[gameboard.activeShipInd].vertical);
-                  if (!gameboard.shipCollides(coord)) {
-                    const shipLength = gameboard.ships[gameboard.activeShipInd].length;
-                    const shipVertical = gameboard.ships[gameboard.activeShipInd].vertical;
-                    gameboard.ships.splice(gameboard.activeShipInd, 1);
-                    gameboard.ships.push(new Ship(shipCoordX, shipCoordY, shipLength, shipVertical));
-                    gameboard.removeShip();
-                  } else {
-                    gameboard.updateShipCells('inactive');
-                    gameboard.renderBoard(boardEl);
-                  }
-                  gameboard.shipActive = false;
-                  gameboard.activeShipInd = '';
-                  console.log(gameboard.ships);
-                  boardEl.removeEventListener('click', chooseShip);
-                  gameboard.removeShip(boardEl);
-                  gameboard.renderBoard(boardEl);
-                }
-                document.querySelector('#start_game').addEventListener('click', function() {
-                  debugger;
-                  boardEl.removeEventListener('click', chooseShip);
-                });
-          };
-          gameboard.onMoveShip();
-        }
-      });
-  }
-
   getCellIndex(x, y) {
     let cX = Math.floor(x / 30);
     let cY = Math.floor(y /30);
@@ -337,6 +272,15 @@ class Gameboard{
     }
   }
 
+/*
+  activateShipHandler(boardEl) {
+        const gameboard = this;
+        console.log(gameboard);
+
+
+        }
+  }
+*/
   deactivateShipHandler(boardEl) {
     this.onMoveShip = () => {};
     boardEl.removeEventListener('click', chooseShip);

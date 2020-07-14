@@ -38,14 +38,74 @@ async function addCellListeners() {
   }
 }
 
+function onChooseShip(e) {
+  e.preventDefault();
+  const boardRect = my_board.getBoundingClientRect();
+  const left = boardRect.x;
+  const top = boardRect.y;
+  let coordX = e.clientX - left;
+  let coordY = e.clientY - top;
+  const getCell = my_gameboard.getCellIndex.bind(my_gameboard, coordX, coordY);
+  const cellInd = getCell();
+  const getShip = my_gameboard.getShip.bind(my_gameboard, cellInd);
+  const isShip = getShip();
+  if (isShip) {
+    const cellX = Math.floor(coordX / 30);
+    const cellY = Math.floor(coordY /30);
+    my_gameboard.activeShipInd = my_gameboard.findShip(cellX, cellY);
+    my_gameboard.shipActive = true;
+    const shipC = my_gameboard.ships[my_gameboard.activeShipInd].coords;
+    console.log(shipC);
+    my_gameboard.updateShipCells('active');
+    my_gameboard.renderBoard(my_board);
+    my_gameboard.onMoveShip = () => {
+      console.log(my_gameboard);
+      function moveShip(e) {
+        let leftC, topC;
+        const boardRect = my_board.getBoundingClientRect();
+        const left = boardRect.x;
+        const top = boardRect.y;
+        leftC = e.clientX - left;
+        topC = e.clientY - top;
+
+        const shipCoordX = Math.floor(leftC / 30);
+        const shipCoordY = Math.floor(topC / 30);
+        const coord = my_gameboard.makeShipCoords(shipCoordX, shipCoordY, my_gameboard.ships[my_gameboard.activeShipInd].length, my_gameboard.ships[my_gameboard.activeShipInd].vertical);
+        if (!my_gameboard.shipCollides(coord)) {
+          const shipLength = my_gameboard.ships[my_gameboard.activeShipInd].length;
+          const shipVertical = my_gameboard.ships[my_gameboard.activeShipInd].vertical;
+          my_gameboard.ships.splice(my_gameboard.activeShipInd, 1);
+          my_gameboard.ships.push(new Ship(shipCoordX, shipCoordY, shipLength, shipVertical));
+          my_gameboard.removeShip();
+        } else {
+          my_gameboard.updateShipCells('inactive');
+          my_gameboard.renderBoard(my_board);
+        }
+        my_gameboard.shipActive = false;
+        my_gameboard.activeShipInd = '';
+        console.log(my_gameboard.ships);
+        my_board.removeEventListener('click', moveShip);
+        my_gameboard.removeShip(my_board);
+        my_gameboard.renderBoard(my_board);
+      }
+      my_board.addEventListener('click', moveShip);
+    };
+    my_gameboard.onMoveShip();
+  }
+}
+
 drawBoards();
-user.chooseShip(my_board);
+//user.chooseShip(my_board);
+my_board.addEventListener('dblclick', onChooseShip);
 
 // Start the game when user clicks on 'start game' button
-start_game.addEventListener('click', function() {
-  this.style.display = 'none';
-  user.my_gameboard.deactivateShipHandler(my_board);
-  addCellListeners();
+window.addEventListener('click', function() {
+  if(this.id == 'start_game') {
+    start_game.style.display = 'none';
+    my_board.removeEventListener('dblclick', onChooseShip);
+    user.removeChooseShip();
+    addCellListeners();
+  }
 });
 
 function loop(coord) {
