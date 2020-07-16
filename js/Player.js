@@ -4,6 +4,7 @@ class Player {
     this.my_gameboard = my_gameboard;
     this.op_gameboard = op_gameboard;
   }
+
   makeMove() {
       let coord;
       do {

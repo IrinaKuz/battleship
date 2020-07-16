@@ -2,7 +2,7 @@ class Gameboard{
   constructor(ships = []) {
     this.width = 10;
     this.height = 10;
-    this.cellWidth = 30;
+    this.cellWidth = 40;
     this.ships = ships; // an array of ships
     this.matrix = (() => {
       let arr = [];
@@ -54,6 +54,7 @@ class Gameboard{
         console.log('Your ship is sunk');
         result = 'sunk';
         this.myTotalSunk++;
+        this.recordSunk(ind);
       }
       if(this.myTotalSunk >= this.ships.length) {
         // game ends!
@@ -91,7 +92,17 @@ class Gameboard{
     }
   }
 
-  updateBoard(coord, status) {
+  recordSunk(ind) {
+    let shipCoord = this.ships[ind].coords;
+    console.log(shipCoord);
+    let cellCoord = shipCoord.map(el => this.findCellByXY(el.x, el.y));
+    console.log(cellCoord);
+    for (let i = 0; i < cellCoord.length; i++) {
+      this.matrix[cellCoord[i]].status = '!';
+    }
+  }
+
+  updateOpponentBoard(coord, status) {
     const ind = this.findCellByXY(coord.x, coord.y);
     switch (status) {
       case 'miss':
@@ -134,28 +145,28 @@ class Gameboard{
   renderBoard(parent) {
     const cells = parent.querySelectorAll('.cell');
     for (let i = 0; i < cells.length; i++) {
-      cells[i].className = 'cell'; // remove all classes from cells except for "cell"
+      cells[i].className = 'cell'; // remove all classes from cells, except for "cell"
       if(this.matrix[i].status === 'o') {
         cells[i].textContent = '';
       } else if(this.matrix[i].status === 'O') {
         cells[i].textContent = 'o';
       } else if(this.matrix[i].status === 's') {
           cells[i].classList.add('ship');
-          cells[i].textContent = 's';
+        //  cells[i].textContent = 's';
       } else if (this.matrix[i].status == 'a') {
           cells[i].classList.add('activated');
-          cells[i].textContent = 'a';
+        //  cells[i].textContent = 'a';
       } else if (this.matrix[i].status == 'sa' || this.matrix[i].status == 'X') {
           cells[i].classList.add('hit');
           cells[i].textContent = 'X';
       } else if(this.matrix[i].status == '!') {
           cells[i].classList.add('sunk');
-          cells[i].textContent = '!';
+          cells[i].textContent = 'X';
       }
     }
   }
 
-  makeShipCoords(x, y, length, isVertical) {
+  makeShipCoordsLong(x, y, length, isVertical) {
     let coords = [];
     let i;
     if(!isVertical) {
@@ -174,14 +185,44 @@ class Gameboard{
     return coords;
   }
 
-// check if random coordinates collide with existing ship
+  makeShipCoordsShort(x, y, length, isVertical) {
+    let coords = [];
+    let i;
+    if(!isVertical) {
+      for (i = x; i < length + x; i++) {
+        coords.push({x: i, y: y});
+      }
+    } else {
+      for (i = y; i < length + y; i++) {
+        coords.push({x: x, y: i});
+      }
+    }
+    return coords;
+  }
+
+// check if random coordinatesooi collide with existing ship
   shipCollides(coords) {
     for(let i = 0; i < coords.length; i++) {
       if(this.findShip(coords[i].x, coords[i].y) != undefined) {
         return true;
       }
    }
-    //  console.log('Result of findShip ' + this.findShip(coords[i].x, coords[i].y));
+  }
+
+  checkShip(coords) {
+    let shipC = coords.map(el => this.findCellByXY(el.x, el.y));
+    console.log(shipC);
+    if(shipC.includes(-1)) {
+      return true;
+    }
+    for(let i = 0; i < this.matrix.length; i++) {
+      if(shipC.includes(i)){
+        if(this.matrix[i].status === 's') {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   chooseRandomShips() {
@@ -196,7 +237,7 @@ class Gameboard{
             randX = Math.floor(Math.random() * (this.width - i));
             randY = Math.floor(Math.random() * (this.height - i));
             shipDir = Math.random() >= 0.5;
-            coords = this.makeShipCoords(randX, randY, i+1, shipDir);
+            coords = this.makeShipCoordsLong(randX, randY, i+1, shipDir);
           }
           while (this.shipCollides(coords));
           let ship = new Ship(randX, randY, i+1, shipDir);
@@ -207,7 +248,7 @@ class Gameboard{
           randX = Math.floor(Math.random() * (this.width - i));
           randY = Math.floor(Math.random() * (this.height - i));
           shipDir = Math.random() >= 0.5;
-          coords = this.makeShipCoords(randX, randY, i+1, shipDir);
+          coords = this.makeShipCoordsLong(randX, randY, i+1, shipDir);
 
         }
         while (this.shipCollides(coords));
@@ -220,8 +261,8 @@ class Gameboard{
   }
 
   getCellIndex(x, y) {
-    let cX = Math.floor(x / 30);
-    let cY = Math.floor(y /30);
+    let cX = Math.floor(x / this.cellWidth);
+    let cY = Math.floor(y / this.cellWidth);
     let index = this.findCellByXY(cX, cY);
     return index;
   }
@@ -268,7 +309,7 @@ class Gameboard{
     boardEl.removeEventListener('click', chooseShip);
   }
   endGame(text) {
-    document.querySelector('#end_game').textContent = text;
+    document.querySelector('#end_game div').textContent = text;
     document.querySelector('#end_game').style.display = 'flex';
   }
 }

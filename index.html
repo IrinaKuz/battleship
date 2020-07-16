@@ -5,6 +5,7 @@
     <title>Battleship</title>
     <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
   </head>
   <body>
     <h1>Battleship Game</h1>
@@ -18,10 +19,7 @@
           <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
         </div>
       </div>
-      <div class="gameboard">
-        <div id="start_game" class="notice start">
-          <button type="button">Begin game</button>
-        </div>
+      <div class="gameboard comp_gameboard">
         <div class="board" id="comp_board"></div>
         <div class="letters">
           <div>A</div><div>B</div><div>C</div><div>D</div><div>E</div><div>F</div><div>G</div><div>H</div><div>I</div><div>J</div>
@@ -30,8 +28,14 @@
           <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
         </div>
       </div>
+        <div id="start_game" class="start">
+          <button type="button">Begin game</button>
+        </div>
     </div>
-    <div id="end_game" class="notice end"></div>
+    <div id="end_game" class="notice end">
+      <div></div>
+      <a href="index.html"><i class="fas fa-redo-alt"></i></a>
+    </div>
     <script src="js/Ship.js"></script>
     <script src="js/Gameboard.js"></script>
     <script src="js/Player.js"></script>
