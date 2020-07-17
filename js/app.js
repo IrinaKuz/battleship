@@ -8,25 +8,24 @@ let my_gameboard = new Gameboard();
 let comp_gameboard = new Gameboard();
 my_gameboard.chooseRandomShips();
 comp_gameboard.chooseRandomShips();
-let user = new Player('user', my_gameboard, new Gameboard());
-let computer = new Player('computer', comp_gameboard, new Gameboard());
+let user = new Player('user', my_gameboard);
+let computer = new Player('computer', comp_gameboard);
 
 async function drawBoards() {
-  await user.op_gameboard.drawBoard(comp_board);
+  await computer.my_gameboard.drawBoard(comp_board);
   cells_comp = comp_board.querySelectorAll('.cell');
 }
 
 function loop(coord) {
       let result = computer.my_gameboard.receiveAttack(coord);
-      user.op_gameboard.updateOpponentBoard(coord, result);
       if(result == 'lost') {
-        user.op_gameboard.endGame('You won!');
+        user.my_gameboard.endGame('You won!');
       }
       // redraw computer's board
-      user.op_gameboard.renderBoard(comp_board);
+      computer.my_gameboard.renderBoard(comp_board);
       let comp_coord = computer.makeMove();
       result = user.my_gameboard.receiveAttack(comp_coord);
-      user.op_gameboard.renderBoard(comp_board);
+      computer.my_gameboard.renderBoard(comp_board);
       if(result == 'lost') {
         user.op_gameboard.endGame('You lost!');
       }
@@ -65,8 +64,13 @@ function onChooseShip(e) {
     const cellY = Math.floor(coordY / my_gameboard.cellWidth);
     my_gameboard.activeShipInd = my_gameboard.findShip(cellX, cellY);
     my_gameboard.shipActive = true;
+    // save active ship's coordinates
     const shipC = my_gameboard.ships[my_gameboard.activeShipInd].coords;
-    my_gameboard.updateShipCells('active');
+    const shipIsVertical = my_gameboard.ships[my_gameboard.activeShipInd].vertical;
+    console.log(shipC);
+    // delete active ship from ships array
+    my_gameboard.ships.splice(my_gameboard.activeShipInd, 1);
+    my_gameboard.updateShipCells(shipC);
     my_gameboard.renderBoard(my_board);
     my_gameboard.onMoveShip = () => {
       function moveShip(e) {
@@ -79,16 +83,14 @@ function onChooseShip(e) {
 
         const shipCoordX = Math.floor(leftC / my_gameboard.cellWidth);
         const shipCoordY = Math.floor(topC / my_gameboard.cellWidth);
-        const shipLength = my_gameboard.ships[my_gameboard.activeShipInd].length;
-        const shipVertical = my_gameboard.ships[my_gameboard.activeShipInd].vertical;
-        const coordShort = my_gameboard.makeShipCoordsShort(shipCoordX, shipCoordY, shipLength, shipVertical);
-        const coordLong = my_gameboard.makeShipCoordsLong(shipCoordX, shipCoordY, shipLength, shipVertical);
+        const coordShort = my_gameboard.makeShipCoordsShort(shipCoordX, shipCoordY, shipC.length, shipIsVertical);
+        const coordLong = my_gameboard.makeShipCoordsLong(shipCoordX, shipCoordY, shipC.length, shipIsVertical);
         if (!my_gameboard.checkShip(coordShort) && !my_gameboard.shipCollides(coordLong)) {
-          my_gameboard.ships.splice(my_gameboard.activeShipInd, 1);
-          my_gameboard.ships.push(new Ship(shipCoordX, shipCoordY, shipLength, shipVertical));
+          my_gameboard.ships.push(new Ship(shipCoordX, shipCoordY, shipC.length, shipIsVertical));
           my_gameboard.removeShip();
         } else {
-          my_gameboard.updateShipCells('inactive');
+          // my_gameboard.updateShipCells(shipC);
+          my_gameboard.ships.push(new Ship(shipC[0].x, shipC[0].y, shipC.length, shipIsVertical));
           my_gameboard.renderBoard(my_board);
         }
         my_gameboard.shipActive = false;
@@ -109,7 +111,7 @@ my_board.addEventListener('dblclick', onChooseShip);
 
 // Start the game when user clicks on 'start game' button
 start_game.addEventListener('click', function() {
-    this.style.display = 'none';
+    this.parentElement.style.display = 'none';
     // unregister onChooseShip handler
     comp_gameboardEl.style.display = 'block';
     my_board.removeEventListener('dblclick', onChooseShip);

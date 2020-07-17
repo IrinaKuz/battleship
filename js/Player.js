@@ -1,8 +1,7 @@
 class Player {
-  constructor(name, my_gameboard, op_gameboard) {
+  constructor(name, my_gameboard) {
     this.name = name;
     this.my_gameboard = my_gameboard;
-    this.op_gameboard = op_gameboard;
   }
 
   makeMove() {
@@ -10,7 +9,7 @@ class Player {
       do {
         coord = this.makeRandomMove();
       }
-      while (this.op_gameboard.checkCells(coord.x, coord.y) === -1)
+      while (this.my_gameboard.checkCells(coord.x, coord.y) === -1)
       console.log(this.name + " " + coord.x + " " + coord.y);
     return coord;
   }

@@ -79,6 +79,7 @@ h1{
   align-items: center;
   cursor: pointer;
   z-index: 2;
+  transition: all 0.2s;
 }
 .ship{
   background-color: goldenrod;
@@ -88,9 +89,11 @@ h1{
 }
 .hit{
   color: red;
+  background-color: goldenrod;
 }
 .sunk{
   background-color: red;
+  color: red;
   border: 1px solid red;
 }
 .notice{
@@ -105,8 +108,11 @@ h1{
   color: purple;
 }
 .start {
+  display: flex;
+  flex-direction: column;
+  line-height: 150%;
   width: 400px;
-  text-align: center;
+  color: #f2f2d9;
 }
 .end {
   display: none;

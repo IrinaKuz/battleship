@@ -94,9 +94,9 @@ class Gameboard{
 
   recordSunk(ind) {
     let shipCoord = this.ships[ind].coords;
-    console.log(shipCoord);
+  //  console.log(shipCoord);
     let cellCoord = shipCoord.map(el => this.findCellByXY(el.x, el.y));
-    console.log(cellCoord);
+//    console.log(cellCoord);
     for (let i = 0; i < cellCoord.length; i++) {
       this.matrix[cellCoord[i]].status = '!';
     }
@@ -143,6 +143,7 @@ class Gameboard{
   }
 
   renderBoard(parent) {
+    console.log(parent);
     const cells = parent.querySelectorAll('.cell');
     for (let i = 0; i < cells.length; i++) {
       cells[i].className = 'cell'; // remove all classes from cells, except for "cell"
@@ -150,7 +151,7 @@ class Gameboard{
         cells[i].textContent = '';
       } else if(this.matrix[i].status === 'O') {
         cells[i].textContent = 'o';
-      } else if(this.matrix[i].status === 's') {
+      } else if(this.matrix[i].status === 's' && parent.id != "comp_board") {
           cells[i].classList.add('ship');
         //  cells[i].textContent = 's';
       } else if (this.matrix[i].status == 'a') {
@@ -289,18 +290,15 @@ class Gameboard{
     }
   }
 
-  updateShipCells(status) {
-  //  debugger;
-    const ship = this.ships[this.activeShipInd];
-    const coord = ship.coords;
+  updateShipCells(coord) {
     for (let i = 0; i < coord.length; i++) {
       const x = coord[i].x;
       const y = coord[i].y;
-      if(status === 'active') {
+    //  if(status === 'active') {
         this.matrix[this.findCellByXY(x, y)].status = 'a';
-      } else {
-        this.matrix[this.findCellByXY(x, y)].status = 's';
-      }
+    //  } else {
+    //    this.matrix[this.findCellByXY(x, y)].status = 's';
+    //  }
     }
   }
 
