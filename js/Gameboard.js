@@ -14,8 +14,9 @@ class Gameboard{
       return arr;
     })();
     this.myTotalSunk = 0;
-    this.shipActive = false;
-    this.activeShipInd; // index of an active ship (that was clicked)
+    this.activeShip = null;
+  //  this.shipActive = false;
+  //  this.activeShipInd; // index of an active ship (that was clicked)
     this.onMoveShip = () => {};
     this.placeShips();
   }
@@ -212,7 +213,6 @@ class Gameboard{
 
   checkShip(coords) {
     let shipC = coords.map(el => this.findCellByXY(el.x, el.y));
-    console.log(shipC);
     if(shipC.includes(-1)) {
       return true;
     }
@@ -294,11 +294,7 @@ class Gameboard{
     for (let i = 0; i < coord.length; i++) {
       const x = coord[i].x;
       const y = coord[i].y;
-    //  if(status === 'active') {
         this.matrix[this.findCellByXY(x, y)].status = 'a';
-    //  } else {
-    //    this.matrix[this.findCellByXY(x, y)].status = 's';
-    //  }
     }
   }
 
