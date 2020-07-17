@@ -17,6 +17,7 @@ h1{
   color: #330033;
   text-align: center;
   padding: 10px 0;
+  text-shadow: 2px 2px #ff33ff;
 }
 .main{
   display: flex;
@@ -95,6 +96,9 @@ h1{
   background-color: red;
   color: red;
   border: 1px solid red;
+}
+.empty{
+  background-color: #b3e6ff;
 }
 .notice{
   position: absolute;

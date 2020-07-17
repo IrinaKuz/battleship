@@ -152,6 +152,7 @@ class Gameboard{
         cells[i].textContent = '';
       } else if(this.matrix[i].status === 'O') {
         cells[i].textContent = 'o';
+        cells[i].classList.add('empty');
       } else if(this.matrix[i].status === 's' && parent.id != "comp_board") {
           cells[i].classList.add('ship');
         //  cells[i].textContent = 's';
